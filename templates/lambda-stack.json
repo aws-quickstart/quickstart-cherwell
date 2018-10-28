@@ -477,7 +477,7 @@
             "Fn::Sub": "${QSS3KeyPrefix}functions/package/cherwell-service.zip"
           }
         },
-        "Handler": "bin/estamate",
+        "Handler": "bin/estimate",
         "MemorySize": 1024,
         "Role": {
           "Fn::GetAtt": [
