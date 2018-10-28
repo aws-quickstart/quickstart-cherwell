@@ -1,0 +1,255 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "QuickStart for Cherwell, License: Apache 2.0 (Please do not remove)",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Cherwell Configuration"
+                    },
+                    "Parameters": [
+                        "Url",
+                        "Username",
+                        "Password",
+                        "Grant",
+                        "ClientID"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Config Configuration"
+                    },
+                    "Parameters": [
+                        "Config"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quick Start Configuration"
+                    },
+                    "Parameters": [
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
+                    ]
+                }
+            ]
+        },
+        "ParameterLabels": {
+            "QSS3BucketName": {
+                "default": "Quick Start S3 Bucket Name"
+            },
+            "QSS3KeyPrefix": {
+                "default": "Quick Start S3 Key Prefix"
+            },
+            "Username": {
+                "default": "Cherwell Username"
+            },
+            "Password": {
+                "default": "Cherwell Password"
+            },
+            "Url": {
+                "default": "Cherwell URL"
+            },
+            "Grant": {
+                "default": "Cherwell Grant"
+            },
+            "ClientID": {
+                "default": "ClientID"
+            },
+            "AWSConfig": {
+                "default": "AWS Config"
+            }
+        }
+    },
+    "Parameters": {
+        "QSS3BucketName": {
+            "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z\\-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Description": "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)",
+            "Type": "String",
+            "Default": "cherwell-dev"
+        },
+        "QSS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z-/]*$",
+            "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
+            "Default": "quickstart-cherwell/",
+            "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
+            "Type": "String"
+        },
+        "Username": {
+            "Description": "Username for the authorized user on the Cherwell instance with permission to make REST request.",
+            "Type": "String",
+            "Default": "CSDAdmin"
+        },
+        "Password": {
+            "Description": "Password for the authorized user on the Cherwell instance with permission to make REST request.",
+            "Type": "String",
+            "Default": "CSDAdmin"
+        },
+        "Url": {
+            "AllowedPattern": "^https?:\\/\\/(?!.*:\\/\\/)\\S+",
+            "ConstraintDescription": "The URL must start with https.",
+            "Description": "Url of the Cherwell instance.",
+            "Type": "String",
+            "Default": "http://54.153.77.81"
+        },
+        "Grant": {
+            "Description": "The type of Grant needed to make a REST request to your Cherwell instance. For most customers \"password\" is the default.",
+            "Type": "String",
+            "Default": "password"
+        },
+        "ClientID": {
+            "Description": "The type of Client ID needed to make a REST request to your Cherwell instance.",
+            "Type": "String",
+            "Default": "0a07f8b1-d800-424a-a8ab-66146f4e0991"
+        },
+        "Config": {
+            "Description": "Enable AWS config with recommended rules.",
+            "Type": "String",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "True"
+        }
+    },
+    "Conditions": {
+        "EnableConfig": {
+            "Fn::Equals": [
+                {
+                    "Ref": "Config"
+                },
+                "True"
+            ]
+        }
+    },
+    "Resources": {
+        "LambdaFunctionStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/lambda-stack.json"
+                },
+                "Parameters": {
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
+                    },
+                    "Username": {
+                        "Ref": "Username"
+                    },
+                    "Password": {
+                        "Ref": "Password"
+                    },
+                    "Url": {
+                        "Ref": "Url"
+                    },
+                    "Grant": {
+                        "Ref": "Grant"
+                    },
+                    "ClientID": {
+                        "Ref": "ClientID"
+                    }
+                }
+            }
+        },
+        "APIAccessStack": {
+            "DependsOn": "LambdaFunctionStack",
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/apigateway-stack.json"
+                },
+                "Parameters": {
+                    "GetEstimateFunction": {
+                        "Fn::GetAtt": [
+                            "LambdaFunctionStack",
+                            "Outputs.estimateLambdaFunctionQualifiedArn"
+                        ]
+                    }
+                }
+            }
+        },
+        "NotificationStack": {
+            "DependsOn": "APIAccessStack",
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/notification-stack.json"
+                },
+                "Parameters": {
+                    "IncidentFunction": {
+                        "Fn::GetAtt": [
+                            "LambdaFunctionStack",
+                            "Outputs.incidentLambdaFunctionQualifiedArn"
+                        ]
+                    },
+                    "CMDBFunction": {
+                        "Fn::GetAtt": [
+                            "LambdaFunctionStack",
+                            "Outputs.CmdbLambdaFunctionQualifiedArn"
+                        ]
+                    }
+                }
+            }
+        },
+        "CatalogStack": {
+            "DependsOn": "NotificationStack",
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/service-catalog-stack.json"
+                },
+                "Parameters": {
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
+                    },
+                    "GatewayRole": {
+                        "Fn::GetAtt": [
+                            "APIAccessStack",
+                            "Outputs.GatewayRole"
+                        ]
+                    }
+                }
+            }
+        },
+        "ConfigStack": {
+            "DependsOn": "CatalogStack",
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "EnableConfig",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/config-stack.json"
+                },
+                "Parameters": {
+                    "GlobalResourceTypesRegion": {
+                        "Ref": "AWS::Region"
+                    },
+                    "SourceAccounts": {
+                        "Ref": "AWS::AccountId"
+                    },
+                    "SourceRegions": {
+                        "Ref": "AWS::Region"
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "ServiceEndPoint": {
+            "Description": "Cherwell  API gateway endpoint URL",
+            "Value": {
+                "Fn::GetAtt": [
+                    "APIAccessStack",
+                    "Outputs.ServiceEndPoint"
+                ]
+            }
+        }
+    }
+}

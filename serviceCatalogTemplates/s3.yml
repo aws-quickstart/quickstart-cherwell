@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Sample Template S3 Bucket:
+  Create an Amazon S3 Bucket.  **WARNING** This template creates an Amazon
+  S3 Bucket. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+Resources:
+  Bucket:
+    Type: 'AWS::S3::Bucket'
+Outputs:
+  InstanceId:
+    Description: Name of the newly S3 Bucket Name
+    Value:
+      Ref: Bucket
+    

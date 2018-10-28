@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "Config",
+        "ParameterValue": "False"
+    },
+    {
+        "ParameterKey": "ClientID",
+        "ParameterValue": "0a07f8b1-d800-424a-a8ab-66146f4e0991"
+    },
+    {
+        "ParameterKey": "Grant",
+        "ParameterValue": "password"
+    },
+    {
+        "ParameterKey": "Url",
+        "ParameterValue": "http://54.153.77.81"
+    },
+    {
+        "ParameterKey": "Password",
+        "ParameterValue": "CSDAdmin"
+    },
+    {
+        "ParameterKey": "Username",
+        "ParameterValue": "CSDAdmin"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "quickstart-cherwell/"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    }
+]
