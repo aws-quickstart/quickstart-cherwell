@@ -1,7 +1,7 @@
 global:
   marketplace-ami: false
   owner: quickstart-eng@amazon.com
-  qsname: quickstart-quickstart-cherwell-intergration
+  qsname: quickstart-cherwell
   regions:
     - ap-northeast-1
     - ap-northeast-2
@@ -11,8 +11,8 @@ global:
     - ca-central-1
     - eu-central-1
     - eu-west-1
+    - eu-west-2
     - sa-east-1
-    - us-east-1
     - us-east-2
     - us-west-1
     - us-west-2
@@ -20,5 +20,8 @@ global:
 
 tests:
   cherwell:
-    parameter_input: cherwell-master.json
-    template_file: cherwell-master.template
+    parameter_input: cherwell-taskcat.json
+    template_file: cherwell-master.template.json
+  cherwell-noconfig:
+    parameter_input: cherwell-taskcat-noconfig.json
+    template_file: cherwell-master.template.json
