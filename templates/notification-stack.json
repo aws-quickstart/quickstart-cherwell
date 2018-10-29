@@ -3,11 +3,11 @@
     "Description": "Create the event resouces.",
     "Parameters": {
         "IncidentFunction": {
-            "Description": "The arn for the get Incident Lambda function.",
+            "Description": "The arn for the Lambda function that will send incidents to Cherwell.",
             "Type": "String"
         },
         "CMDBFunction": {
-            "Description": "The arn for the get CMDB Lambda function.",
+            "Description": "The arn for the CMDB Lambda function.",
             "Type": "String"
         }
     },
@@ -128,6 +128,17 @@
                 "FunctionName": {
                     "Ref": "IncidentFunction"
                 }
+            }
+        }
+    },
+    "Outputs": {
+        "IncidentSNSTopicName": {
+            "Description": "The name of the SNS incident topic.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "IncidentSNSTopic",
+                    "TopicName"
+                ]
             }
         }
     }

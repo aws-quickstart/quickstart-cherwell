@@ -259,6 +259,15 @@
                     "Outputs.APIKey"
                 ]
             }
+        },
+        "IncidentSNSTopic": {
+            "Description": "The name of the SNS incident topic.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "NotificationStack",
+                    "Outputs.IncidentSNSTopicName"
+                ]
+            }
         }
     }
 }
