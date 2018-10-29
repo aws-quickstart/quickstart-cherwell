@@ -243,11 +243,20 @@
     },
     "Outputs": {
         "ServiceEndPoint": {
-            "Description": "Cherwell  API gateway endpoint URL",
+            "Description": "API gateway endpoint URL",
             "Value": {
                 "Fn::GetAtt": [
                     "APIAccessStack",
                     "Outputs.ServiceEndPoint"
+                ]
+            }
+        },
+        "APIKey": {
+            "Description": "API key ID",
+            "Value": {
+                "Fn::GetAtt": [
+                    "APIAccessStack",
+                    "Outputs.APIKey"
                 ]
             }
         }
