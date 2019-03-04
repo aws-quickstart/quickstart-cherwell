@@ -33,32 +33,32 @@
                         "QSS3KeyPrefix"
                     ]
                 }
-            ]
-        },
-        "ParameterLabels": {
-            "QSS3BucketName": {
-                "default": "Quick Start S3 Bucket Name"
-            },
-            "QSS3KeyPrefix": {
-                "default": "Quick Start S3 Key Prefix"
-            },
-            "Username": {
-                "default": "Cherwell Username"
-            },
-            "Password": {
-                "default": "Cherwell Password"
-            },
-            "Url": {
-                "default": "Cherwell URL"
-            },
-            "Grant": {
-                "default": "Cherwell Grant"
-            },
-            "ClientID": {
-                "default": "ClientID"
-            },
-            "AWSConfig": {
-                "default": "AWS Config"
+            ],
+            "ParameterLabels": {
+                "QSS3BucketName": {
+                    "default": "Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "Quick Start S3 Key Prefix"
+                },
+                "Username": {
+                    "default": "Cherwell Username"
+                },
+                "Password": {
+                    "default": "Cherwell Password"
+                },
+                "Url": {
+                    "default": "Cherwell URL"
+                },
+                "Grant": {
+                    "default": "Cherwell Grant"
+                },
+                "ClientID": {
+                    "default": "Client ID"
+                },
+                "Config": {
+                    "default": "AWS Config"
+                }
             }
         }
     },
@@ -73,7 +73,6 @@
         "QSS3KeyPrefix": {
             "AllowedPattern": "^[0-9a-zA-Z-/]*$",
             "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
-            "Default": "quickstart-cherwell/",
             "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
             "Type": "String"
         },
@@ -92,7 +91,7 @@
             "ConstraintDescription": "The URL must start with https.",
             "Description": "Url of the Cherwell instance.",
             "Type": "String",
-            "Default": "http://54.153.77.81"
+            "Default": "http://yourserver"
         },
         "Grant": {
             "Description": "The type of Grant needed to make a REST request to your Cherwell instance. For most customers \"password\" is the default.",
@@ -101,8 +100,7 @@
         },
         "ClientID": {
             "Description": "The type of Client ID needed to make a REST request to your Cherwell instance.",
-            "Type": "String",
-            "Default": "0a07f8b1-d800-424a-a8ab-66146f4e0991"
+            "Type": "String"
         },
         "Config": {
             "Description": "Enable AWS config with recommended rules.",
