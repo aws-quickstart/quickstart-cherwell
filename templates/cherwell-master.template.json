@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "QuickStart for Cherwell, License: Apache 2.0 (Please do not remove)",
+    "Description": "QuickStart for Cherwell, License: Apache 2.0 (Please do not remove) March,4,2019 (qs-1pcd8k5ae)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
