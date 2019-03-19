@@ -22,17 +22,21 @@ To build the AWS Lambda funtions:
 
 Install [Golang](https://golang.org/doc/install) and the [AWS Go Sdk](https://aws.amazon.com/sdk-for-go/)
 
-Clone the repo:
+1. Clone the repo:
 
     $git clone https://github.com/brianterry/quickstart-cherwell.git
 
-Navigate to: *functions/source*
+2. Navigate to: *functions/source*
 
     $ cd functions/source
 
 
-Build the lambda functions:
+3. Build the lambda functions:
 
     $ make
 
-Upload all Cloudformation assets to S3.
+4. Create a folder on s3 and note the name
+5. Upload contents of this repo to s Cloudformation assets to S3.
+6. Login the AWS console and select the cherwell-master.template.json template and input the name of the S3 folder you created in step 5.
+7. Wait until the stack deployment is complete.
+
