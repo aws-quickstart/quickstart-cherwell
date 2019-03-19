@@ -21,7 +21,8 @@
                         "default": "AWS Config Configuration"
                     },
                     "Parameters": [
-                        "Config"
+                        "Config",
+                        "ConfigRules"
                     ]
                 },
                 {
@@ -58,6 +59,9 @@
                 },
                 "Config": {
                     "default": "AWS Config"
+                },
+                "ConfigRules": {
+                    "default": "Enable Config rules"
                 }
             }
         }
@@ -103,7 +107,16 @@
             "Type": "String"
         },
         "Config": {
-            "Description": "Enable AWS config with recommended rules.",
+            "Description": "Enable AWS Config.",
+            "Type": "String",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "True"
+        },
+        "ConfigRules": {
+            "Description": "Enabled for monitoring storage encryption (Amazon Elastic Block Store, Amazon S3, and Amazon Relational Database Service), AWS Identity and Access Management (IAM) password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules. AWS Config must be enable for this setting can take effect.(Cost will apply)",
             "Type": "String",
             "AllowedValues": [
                 "True",
@@ -234,6 +247,9 @@
                     },
                     "SourceRegions": {
                         "Ref": "AWS::Region"
+                    },
+                    "ConfigRules": {
+                        "Ref": "ConfigRules"
                     }
                 }
             }
