@@ -37,19 +37,19 @@
             ],
             "ParameterLabels": {
                 "QSS3BucketName": {
-                    "default": "Quick Start S3 Bucket Name"
+                    "default": "Quick Start S3 bucket name"
                 },
                 "QSS3KeyPrefix": {
-                    "default": "Quick Start S3 Key Prefix"
+                    "default": "Quick Start S3 key prefix"
                 },
                 "Username": {
-                    "default": "Cherwell username"
+                    "default": "Cherwell user name"
                 },
                 "Password": {
                     "default": "Cherwell password"
                 },
                 "Url": {
-                    "default": "Cherwell Url"
+                    "default": "Cherwell URL"
                 },
                 "Grant": {
                     "default": "Cherwell grant"
