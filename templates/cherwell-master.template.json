@@ -43,16 +43,16 @@
                     "default": "Quick Start S3 Key Prefix"
                 },
                 "Username": {
-                    "default": "Cherwell Username"
+                    "default": "Cherwell username"
                 },
                 "Password": {
-                    "default": "Cherwell Password"
+                    "default": "Cherwell password"
                 },
                 "Url": {
-                    "default": "Cherwell URL"
+                    "default": "Cherwell Url"
                 },
                 "Grant": {
-                    "default": "Cherwell Grant"
+                    "default": "Cherwell grant"
                 },
                 "ClientID": {
                     "default": "Client ID"
@@ -82,33 +82,33 @@
             "Default": "quickstart-cherwell/"
         },
         "Username": {
-            "Description": "Username for the authorized user on the Cherwell instance with permission to make REST request.",
+            "Description": "The user name of the user on the Cherwell instance who is authorized to make REST requests.",
             "Type": "String",
             "Default": "CSDAdmin"
         },
         "Password": {
-            "Description": "Password for the authorized user on the Cherwell instance with permission to make REST request.",
+            "Description": "The password for the user on the Cherwell instance who is authorized to make REST requests.",
             "Type": "String",
             "Default": "CSDAdmin"
         },
         "Url": {
             "AllowedPattern": "^https?:\\/\\/(?!.*:\\/\\/)\\S+",
-            "ConstraintDescription": "The URL must start with https.",
+            "ConstraintDescription": "The URL of the Cherwell instance. The URL must start with HTTPS.",
             "Description": "Url of the Cherwell instance.",
             "Type": "String",
-            "Default": "http://yourserver"
+            "Default": "https://yourserver"
         },
         "Grant": {
-            "Description": "The type of Grant needed to make a REST request to your Cherwell instance. For most customers \"password\" is the default.",
+            "Description": "For token operation requests, the type of token being requested: password or refresh token. For most customers, \"password \" is the default. For more information, see the Cherwell AWS connector documentation. ",
             "Type": "String",
             "Default": "password"
         },
         "ClientID": {
-            "Description": "The type of Client ID needed to make a REST request to your Cherwell instance.",
+            "Description": "For token operation requests, the API client ID for the client that is making the token request. For more information, see the Cherwell AWS connector documentation",
             "Type": "String"
         },
         "Config": {
-            "Description": "Enable AWS Config.",
+            "Description": "Change this parameter to False if you don’t want to enable AWS Config. ",
             "Type": "String",
             "AllowedValues": [
                 "True",
@@ -117,7 +117,7 @@
             "Default": "True"
         },
         "ConfigRules": {
-            "Description": "Enabled for monitoring storage encryption (Amazon Elastic Block Store, Amazon S3, and Amazon Relational Database Service), AWS Identity and Access Management (IAM) password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules. AWS Config must be enable for this setting can take effect.(Cost will apply)",
+            "Description": "Change this parameter to False if you don’t want to enable AWS Config rules. By default, this service is enabled for monitoring storage encryption (Amazon EBS, Amazon S3, and Amazon RDS), IAM password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules. AWS Config must be enabled for this setting to take effect.",
             "Type": "String",
             "AllowedValues": [
                 "True",
