@@ -10,7 +10,7 @@ The Cherwell Service Management connector creates a reliable and fault-tolerant 
 The highly available, serverless Quick Start architecture extends your current IT management and asset tracking process into your AWS account, to provide compliance, governance, and auto-remediation. 
 By launching this Quick Start in your AWS environment, you will be able to deploy AWS Service Catalog products, monitor AWS resources, and run AWS Systems Manager Automation documents (SSM Automation documents) from your Cherwell Service Management system.
 
-![Quick Start architecture for Cherwell Service Management connector on the AWS Cloud](https://d1.awsstatic.com/partner-network/QuickStart/datasheets/cherwell-architecture.png)
+![Quick Start architecture for Cherwell Service Management connector on the AWS Cloud](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/cherwell-architecture.png)
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/jayvX).
 
