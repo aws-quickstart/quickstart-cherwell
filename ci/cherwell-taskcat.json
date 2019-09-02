@@ -1,9 +1,5 @@
 [
     {
-        "ParameterKey": "Config",
-        "ParameterValue": "True"
-    },
-    {
         "ParameterKey": "ClientID",
         "ParameterValue": "00000000000-0000000000-000000"
     },
