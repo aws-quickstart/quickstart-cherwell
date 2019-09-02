@@ -21,7 +21,9 @@
                         "default": "AWS Config Configuration"
                     },
                     "Parameters": [
-                        "Config",
+                        "DeployAWSConfigSupport",
+                        "EnableAWSConfigRecorder",
+                        "IncludeGlobalResourceTypes",
                         "ConfigRules"
                     ]
                 },
@@ -57,11 +59,17 @@
                 "ClientID": {
                     "default": "Client ID"
                 },
-                "Config": {
-                    "default": "AWS Config"
+                "DeployAWSConfigSupport": {
+                    "default": "Deploy AWS Config Support"
                 },
                 "ConfigRules": {
-                    "default": "Enable Config rules"
+                    "default": "Enable AWS Config rules"
+                },
+                "EnableAWSConfigRecorder": {
+                    "default": "Turn AWS Config recording on"
+                },
+                "IncludeGlobalResourceTypes": {
+                    "default": "Include all supported types of global resources"
                 }
             }
         }
@@ -99,7 +107,7 @@
             "Default": "https://yourserver"
         },
         "Grant": {
-            "Description": "For token operation requests, the type of token being requested: password or refresh token. For most customers, \"password \" is the default. For more information, see the Cherwell AWS connector documentation. ",
+            "Description": "For token operation requests, the type of token being requested: password or refresh token. For most customers, \"password\" is the default. For more information, see the Cherwell AWS connector documentation.",
             "Type": "String",
             "Default": "password"
         },
@@ -107,8 +115,8 @@
             "Description": "For token operation requests, the API client ID for the client that is making the token request. For more information, see the Cherwell AWS connector documentation",
             "Type": "String"
         },
-        "Config": {
-            "Description": "Change this parameter to False if you don’t want to enable AWS Config. ",
+        "DeployAWSConfigSupport": {
+            "Description": "Choose 'False' if you don't want to enable AWS Config; the remaining parameters in this section will be ignored.",
             "Type": "String",
             "AllowedValues": [
                 "True",
@@ -124,13 +132,31 @@
                 "False"
             ],
             "Default": "True"
+        },
+        "IncludeGlobalResourceTypes": {
+            "Type": "String",
+            "Description": "Choose 'True' to enable AWS Config to include all supported types of global resources (for example, IAM resources) with the resources that it records.",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "False"
+        },
+        "EnableAWSConfigRecorder": {
+            "Description": "Choose 'False' if the AWS Config configuration recording is already turned on in this account.",
+            "Type": "String",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "True"
         }
     },
     "Conditions": {
-        "EnableConfig": {
+        "DoDeployAWSConfigSupport": {
             "Fn::Equals": [
                 {
-                    "Ref": "Config"
+                    "Ref": "DeployAWSConfigSupport"
                 },
                 "True"
             ]
@@ -234,14 +260,17 @@
         "ConfigStack": {
             "DependsOn": "CatalogStack",
             "Type": "AWS::CloudFormation::Stack",
-            "Condition": "EnableConfig",
+            "Condition": "DoDeployAWSConfigSupport",
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/config-stack.json"
                 },
                 "Parameters": {
-                    "GlobalResourceTypesRegion": {
-                        "Ref": "AWS::Region"
+                    "EnableAWSConfigRecorder": {
+                        "Ref": "EnableAWSConfigRecorder"
+                    },
+                    "IncludeGlobalResourceTypes": {
+                        "Ref": "IncludeGlobalResourceTypes"
                     },
                     "SourceAccounts": {
                         "Ref": "AWS::AccountId"

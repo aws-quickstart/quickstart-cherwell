@@ -30,5 +30,21 @@
     {
         "ParameterKey": "QSS3BucketName",
         "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "DeployAWSConfigSupport",
+        "ParameterValue": "True"
+    },
+    {
+        "ParameterKey": "ConfigRules",
+        "ParameterValue": "True"
+    },
+    {
+        "ParameterKey": "IncludeGlobalResourceTypes",
+        "ParameterValue": "False"
+    },
+    {
+        "ParameterKey": "EnableAWSConfigRecorder",
+        "ParameterValue": "True"
     }
 ]

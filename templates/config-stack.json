@@ -6,15 +6,16 @@
             "ParameterGroups": [
                 {
                     "Label": {
-                        "default": "Configuration Recorder Configuration"
+                        "default": "AWS Config Configuration Recorder Configuration"
                     },
                     "Parameters": [
-                        "GlobalResourceTypesRegion"
+                        "EnableAWSConfigRecorder",
+                        "IncludeGlobalResourceTypes"
                     ]
                 },
                 {
                     "Label": {
-                        "default": "AWS Config Configuration"
+                        "default": "AWS Config Rules Configuration"
                     },
                     "Parameters": [
                         "ConfigRules"
@@ -31,33 +32,55 @@
                 }
             ],
             "ParameterLabels": {
-                "GlobalResourceTypesRegion": {
-                    "default": "Global resource types region"
+                "EnableAWSConfigRecorder": {
+                    "default": "Turn AWS Config recording on"
+                },
+                "IncludeGlobalResourceTypes": {
+                    "default": "Include all supported types of global resources"
                 },
                 "SourceAccounts": {
                     "default": "Source accounts"
                 },
                 "SourceRegions": {
                     "default": "Source regions"
+                },
+                "ConfigRules": {
+                    "default": "Enable Config Rules"
                 }
             }
         }
     },
     "Parameters": {
-        "GlobalResourceTypesRegion": {
+        "IncludeGlobalResourceTypes": {
             "Type": "String",
-            "Description": "AWS region used to record global resources types"
+            "Description": "Choose 'True' to enable AWS Config to include all supported types of global resources (for example, IAM resources) with the resources that it records.",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "False"
         },
         "SourceAccounts": {
             "Type": "CommaDelimitedList",
-            "Description": "List of source accounts to aggregate"
+            "Description": "List of source accounts to aggregate. Uses current AWS Account as default.",
+            "Default": ""
         },
         "SourceRegions": {
             "Type": "CommaDelimitedList",
-            "Description": "List of regions to aggregate"
+            "Description": "List of regions to aggregate. Uses current AWS Region as default.",
+            "Default": ""
         },
         "ConfigRules": {
-            "Description": "Enabled for monitoring storage encryption (Amazon Elastic Block Store, Amazon S3, and Amazon Relational Database Service), AWS Identity and Access Management (IAM) password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules.(Cost will apply)",
+            "Description": "Enabled for monitoring storage encryption (Amazon Elastic Block Store, Amazon S3, and Amazon Relational Database Service), AWS Identity and Access Management (IAM) password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules.(Cost will apply).",
+            "Type": "String",
+            "AllowedValues": [
+                "True",
+                "False"
+            ],
+            "Default": "True"
+        },
+        "EnableAWSConfigRecorder": {
+            "Description": "Choose 'False' if the AWS Config configuration recording is already turned on in this account; the remaining parameters in this section will be ignored.",
             "Type": "String",
             "AllowedValues": [
                 "True",
@@ -70,7 +93,7 @@
         "IncludeGlobalResourceTypes": {
             "Fn::Equals": [
                 {
-                    "Ref": "GlobalResourceTypesRegion"
+                    "Ref": "IncludeGlobalResourceTypes"
                 },
                 {
                     "Ref": "AWS::Region"
@@ -84,14 +107,32 @@
                 },
                 "True"
             ]
+        },
+        "DoEnableAWSConfigRecorder": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableAWSConfigRecorder"
+                },
+                "True"
+            ]
+        },
+        "DoNotEnableAWSConfigRecorder": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableAWSConfigRecorder"
+                },
+                "False"
+            ]
         }
     },
     "Resources": {
         "ConfigBucket": {
+            "Condition": "DoEnableAWSConfigRecorder",
             "DeletionPolicy": "Retain",
             "Type": "AWS::S3::Bucket"
         },
         "ConfigBucketPolicy": {
+            "Condition": "DoEnableAWSConfigRecorder",
             "Type": "AWS::S3::BucketPolicy",
             "Properties": {
                 "Bucket": {
@@ -135,6 +176,7 @@
             }
         },
         "ConfigRecorderRole": {
+            "Condition": "DoEnableAWSConfigRecorder",
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "AssumeRolePolicyDocument": {
@@ -160,12 +202,14 @@
             }
         },
         "ConfigRecorder": {
+            "Condition": "DoEnableAWSConfigRecorder",
             "Type": "AWS::Config::ConfigurationRecorder",
             "DependsOn": [
                 "ConfigRecorderRole",
                 "ConfigBucketPolicy"
             ],
             "Properties": {
+                "Name": "default",
                 "RoleARN": {
                     "Fn::GetAtt": [
                         "ConfigRecorderRole",
@@ -175,18 +219,16 @@
                 "RecordingGroup": {
                     "AllSupported": true,
                     "IncludeGlobalResourceTypes": {
-                        "Fn::If": [
-                            "IncludeGlobalResourceTypes",
-                            true,
-                            false
-                        ]
+                        "Ref" : "IncludeGlobalResourceTypes"
                     }
                 }
             }
         },
         "DeliveryChannel": {
+            "Condition": "DoEnableAWSConfigRecorder",
             "Type": "AWS::Config::DeliveryChannel",
             "DependsOn": [
+                "ConfigRecorderRole",
                 "ConfigBucketPolicy"
             ],
             "Properties": {
@@ -196,11 +238,34 @@
                 }
             }
         },
+        "DoEnableAWSConfigRecorderWaitHandle": {
+            "Condition": "DoEnableAWSConfigRecorder",
+            "DependsOn": [ "DeliveryChannel","ConfigRecorder"],
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        },
+        "DoNotEnableAWSConfigRecorderWaitHandle": {
+            "Condition": "DoNotEnableAWSConfigRecorder",
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        },
+        "EnableAWSConfigRecorderWaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "Properties": {
+                "Handle": {
+                    "Fn::If": [
+                        "DoEnableAWSConfigRecorder",
+                        { "Ref":"DoEnableAWSConfigRecorderWaitHandle"},
+                        { "Ref":"DoNotEnableAWSConfigRecorderWaitHandle"}
+                    ]
+                },
+                "Timeout": "3600",
+                "Count": "0"
+            }
+        },
         "EncryptedVolumesRule": {
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": {
@@ -228,7 +293,7 @@
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": {
@@ -256,7 +321,7 @@
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": {
@@ -284,7 +349,7 @@
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": {
@@ -307,7 +372,7 @@
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": {
@@ -330,7 +395,7 @@
             "Type": "AWS::Config::ConfigRule",
             "Condition": "EnableConfig",
             "DependsOn": [
-                "ConfigRecorder"
+                "EnableAWSConfigRecorderWaitCondition"
             ],
             "Properties": {
                 "ConfigRuleName": "stackset-s3-bucket-public-read-prohibited",
