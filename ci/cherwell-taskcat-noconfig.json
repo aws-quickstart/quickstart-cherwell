@@ -1,9 +1,5 @@
 [
     {
-        "ParameterKey": "Config",
-        "ParameterValue": "False"
-    },
-    {
         "ParameterKey": "ClientID",
         "ParameterValue": "0000000000000000000000000000000"
     },
@@ -30,5 +26,21 @@
     {
         "ParameterKey": "QSS3BucketName",
         "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "DeployAWSConfigSupport",
+        "ParameterValue": "True"
+    },
+    {
+        "ParameterKey": "ConfigRules",
+        "ParameterValue": "True"
+    },
+    {
+        "ParameterKey": "IncludeGlobalResourceTypes",
+        "ParameterValue": "False"
+    },
+    {
+        "ParameterKey": "EnableAWSConfigRecorder",
+        "ParameterValue": "True"
     }
 ]
