@@ -4,43 +4,43 @@
         "ParameterValue": "0000000000000000000000000000000"
     },
     {
-        "ParameterKey": "Grant",
-        "ParameterValue": "password"
-    },
-    {
-        "ParameterKey": "Url",
-        "ParameterValue": "http://yourserver"
-    },
-    {
-        "ParameterKey": "Password",
-        "ParameterValue": "CSDAdmin"
-    },
-    {
-        "ParameterKey": "Username",
-        "ParameterValue": "CSDAdmin"
-    },
-    {
-        "ParameterKey": "QSS3KeyPrefix",
-        "ParameterValue": "quickstart-cherwell/"
-    },
-    {
-        "ParameterKey": "QSS3BucketName",
-        "ParameterValue": "$[taskcat_autobucket]"
+        "ParameterKey": "ConfigRules",
+        "ParameterValue": "True"
     },
     {
         "ParameterKey": "DeployAWSConfigSupport",
+        "ParameterValue": "False"
+    },
+    {
+        "ParameterKey": "EnableAWSConfigRecorder",
         "ParameterValue": "True"
     },
     {
-        "ParameterKey": "ConfigRules",
-        "ParameterValue": "True"
+        "ParameterKey": "Grant",
+        "ParameterValue": "password"
     },
     {
         "ParameterKey": "IncludeGlobalResourceTypes",
         "ParameterValue": "False"
     },
     {
-        "ParameterKey": "EnableAWSConfigRecorder",
-        "ParameterValue": "True"
+        "ParameterKey": "Password",
+        "ParameterValue": "CSDAdmin"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "quickstart-cherwell/"
+    },
+    {
+        "ParameterKey": "Url",
+        "ParameterValue": "http://yourserver"
+    },
+    {
+        "ParameterKey": "Username",
+        "ParameterValue": "CSDAdmin"
     }
 ]
