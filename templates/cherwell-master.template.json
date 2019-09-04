@@ -18,12 +18,19 @@
                 },
                 {
                     "Label": {
-                        "default": "AWS Config Configuration"
+                        "default": "AWS Config Recorder Configuration"
                     },
                     "Parameters": [
                         "DeployAWSConfigSupport",
                         "EnableAWSConfigRecorder",
-                        "IncludeGlobalResourceTypes",
+                        "IncludeGlobalResourceTypes"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Config Rules Configuration"
+                    },
+                    "Parameters": [
                         "ConfigRules"
                     ]
                 },
@@ -125,7 +132,7 @@
             "Default": "True"
         },
         "ConfigRules": {
-            "Description": "Change this parameter to False if you don’t want to enable AWS Config rules. By default, this service is enabled for monitoring storage encryption (Amazon EBS, Amazon S3, and Amazon RDS), IAM password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules. AWS Config must be enabled for this setting to take effect.",
+            "Description": "Change this parameter to False if you don't want to enable AWS Config rules. By default, this service is enabled for monitoring storage encryption (Amazon EBS, Amazon S3, and Amazon RDS), IAM password policy, root account multi-factor authentication (MFA), Amazon S3 public read and write, and insecure security group rules. AWS Config must be enabled for this setting to take effect.",
             "Type": "String",
             "AllowedValues": [
                 "True",
