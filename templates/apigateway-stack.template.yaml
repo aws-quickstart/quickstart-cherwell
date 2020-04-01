@@ -17,10 +17,9 @@ Resources:
     Type: AWS::ApiGateway::ApiKey
     DependsOn:
       - ApiGatewayDeployment
-      - RestApi
     Properties:
       Description: API key created to authrize Cherwell API calls.
-      Enabled: "true"
+      Enabled: true
       StageKeys:
         - RestApiId:
             Ref: RestApi
@@ -29,7 +28,6 @@ Resources:
     Type: AWS::ApiGateway::UsagePlan
     DependsOn:
       - ApiGatewayDeployment
-      - RestApi
     Properties:
       ApiStages:
         - ApiId:

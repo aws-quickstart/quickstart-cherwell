@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "QuickStart for Cherwell, License: Apache 2.0 (Please do not remove)
+Description:
+  "QuickStart for Cherwell, License: Apache 2.0 (Please do not remove)
   March,4,2019 (qs-1pcd8k5ae)"
 Metadata:
   AWS::CloudFormation::Interface:
@@ -26,10 +27,13 @@ Metadata:
           default: AWS Quick Start Configuration
         Parameters:
           - QSS3BucketName
+          - QSS3BucketRegion
           - QSS3KeyPrefix
     ParameterLabels:
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
       Username:
@@ -53,29 +57,39 @@ Metadata:
 Parameters:
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z\-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase
+    ConstraintDescription:
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
       letters, and hyphens (-). It cannot start or end with a hyphen (-).
-    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name can
+    Description:
+      S3 bucket name for the Quick Start assets. Quick Start bucket name can
       include numbers, lowercase letters, uppercase letters, and hyphens (-). It
       cannot start or end with a hyphen (-)
     Type: String
     Default: aws-quickstart
+  QSS3BucketRegion:
+    Default: "us-east-1"
+    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase
+    ConstraintDescription:
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), and forward slash (/).
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix can
+    Description:
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can
       include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
     Default: quickstart-cherwell/
   Username:
-    Description: The user name of the user on the Cherwell instance who is authorized to
+    Description:
+      The user name of the user on the Cherwell instance who is authorized to
       make REST requests.
     Type: String
     Default: CSDAdmin
   Password:
-    Description: The password for the user on the Cherwell instance who is authorized to
+    Description:
+      The password for the user on the Cherwell instance who is authorized to
       make REST requests.
     Type: String
     Default: CSDAdmin
@@ -86,18 +100,21 @@ Parameters:
     Type: String
     Default: https://yourserver
   Grant:
-    Description: 'For token operation requests, the type of token being requested: password
+    Description:
+      'For token operation requests, the type of token being requested: password
       or refresh token. For most customers, "password" is the default. For more
       information, see the Cherwell AWS connector documentation.'
     Type: String
     Default: password
   ClientID:
-    Description: For token operation requests, the API client ID for the client that is
+    Description:
+      For token operation requests, the API client ID for the client that is
       making the token request. For more information, see the Cherwell AWS
       connector documentation
     Type: String
   DeployAWSConfigSupport:
-    Description: Choose 'False' if you don't want to enable AWS Config; the remaining
+    Description:
+      Choose 'False' if you don't want to enable AWS Config; the remaining
       parameters in this section will be ignored.
     Type: String
     AllowedValues:
@@ -105,7 +122,8 @@ Parameters:
       - "False"
     Default: "True"
   ConfigRules:
-    Description: Change this parameter to False if you don't want to enable AWS Config
+    Description:
+      Change this parameter to False if you don't want to enable AWS Config
       rules. By default, this service is enabled for monitoring storage
       encryption (Amazon EBS, Amazon S3, and Amazon RDS), IAM password policy,
       root account multi-factor authentication (MFA), Amazon S3 public read and
@@ -118,7 +136,8 @@ Parameters:
     Default: "True"
   IncludeGlobalResourceTypes:
     Type: String
-    Description: Choose 'True' to enable AWS Config to include all supported types of
+    Description:
+      Choose 'True' to enable AWS Config to include all supported types of
       global resources (for example, IAM resources) with the resources that it
       records.
     AllowedValues:
@@ -126,7 +145,8 @@ Parameters:
       - "False"
     Default: "False"
   EnableAWSConfigRecorder:
-    Description: Choose 'False' if the AWS Config configuration recording is already turned
+    Description:
+      Choose 'False' if the AWS Config configuration recording is already turned
       on in this account.
     Type: String
     AllowedValues:
@@ -134,6 +154,7 @@ Parameters:
       - "False"
     Default: "True"
 Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
   DoDeployAWSConfigSupport:
     Fn::Equals:
       - Ref: DeployAWSConfigSupport
@@ -142,13 +163,20 @@ Resources:
   LambdaFunctionStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/lambda-stack.json
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/lambda-stack.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
       Parameters:
-        QSS3BucketName:
-          Ref: QSS3BucketName
-        QSS3KeyPrefix:
-          Ref: QSS3KeyPrefix
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
         Username:
           Ref: Username
         Password:
@@ -160,11 +188,18 @@ Resources:
         ClientID:
           Ref: ClientID
   APIAccessStack:
-    DependsOn: LambdaFunctionStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/apigateway-stack.json
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/apigateway-stack.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
       Parameters:
         GetEstimateFunction:
           Fn::GetAtt:
@@ -174,8 +209,16 @@ Resources:
     DependsOn: APIAccessStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/notification-stack.json
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/notification-stack.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
       Parameters:
         IncidentFunction:
           Fn::GetAtt:
@@ -189,13 +232,20 @@ Resources:
     DependsOn: NotificationStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/service-catalog-stack.json
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/service-catalog-stack.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
       Parameters:
-        QSS3BucketName:
-          Ref: QSS3BucketName
-        QSS3KeyPrefix:
-          Ref: QSS3KeyPrefix
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
         GatewayRole:
           Fn::GetAtt:
             - APIAccessStack
@@ -205,17 +255,21 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: DoDeployAWSConfigSupport
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/config-stack.json
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/config-stack.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
       Parameters:
         EnableAWSConfigRecorder:
           Ref: EnableAWSConfigRecorder
         IncludeGlobalResourceTypes:
           Ref: IncludeGlobalResourceTypes
-        SourceAccounts:
-          Ref: AWS::AccountId
-        SourceRegions:
-          Ref: AWS::Region
         ConfigRules:
           Ref: ConfigRules
 Outputs:

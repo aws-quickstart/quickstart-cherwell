@@ -16,20 +16,11 @@ Metadata:
           default: AWS Config Rules Configuration
         Parameters:
           - ConfigRules
-      - Label:
-          default: Configuration Aggregator Configuration
-        Parameters:
-          - SourceAccounts
-          - SourceRegions
     ParameterLabels:
       EnableAWSConfigRecorder:
         default: Turn AWS Config recording on
       IncludeGlobalResourceTypes:
         default: Include all supported types of global resources
-      SourceAccounts:
-        default: Source accounts
-      SourceRegions:
-        default: Source regions
       ConfigRules:
         default: Enable Config Rules
 Parameters:
@@ -42,14 +33,6 @@ Parameters:
       - "True"
       - "False"
     Default: "False"
-  SourceAccounts:
-    Type: CommaDelimitedList
-    Description: List of source accounts to aggregate. Uses current AWS Account as default.
-    Default: ""
-  SourceRegions:
-    Type: CommaDelimitedList
-    Description: List of regions to aggregate. Uses current AWS Region as default.
-    Default: ""
   ConfigRules:
     Description: Enabled for monitoring storage encryption (Amazon Elastic Block Store,
       Amazon S3, and Amazon Relational Database Service), AWS Identity and
@@ -71,10 +54,6 @@ Parameters:
       - "False"
     Default: "True"
 Conditions:
-  IncludeGlobalResourceTypes:
-    Fn::Equals:
-      - Ref: IncludeGlobalResourceTypes
-      - Ref: AWS::Region
   EnableConfig:
     Fn::Equals:
       - Ref: ConfigRules
@@ -137,7 +116,6 @@ Resources:
     Condition: DoEnableAWSConfigRecorder
     Type: AWS::Config::ConfigurationRecorder
     DependsOn:
-      - ConfigRecorderRole
       - ConfigBucketPolicy
     Properties:
       Name: default
@@ -177,7 +155,7 @@ Resources:
           - Ref: DoEnableAWSConfigRecorderWaitHandle
           - Ref: DoNotEnableAWSConfigRecorderWaitHandle
       Timeout: "3600"
-      Count: "0"
+      Count: 0
   EncryptedVolumesRule:
     Type: AWS::Config::ConfigRule
     Condition: EnableConfig

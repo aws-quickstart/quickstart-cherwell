@@ -13,12 +13,15 @@ Metadata:
           - ClientID
       - Label:
           default: AWS Quick Start Configuration
-        Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
+        Parameters:      
+        - QSS3BucketName
+        - QSS3BucketRegion
+        - QSS3KeyPrefix
   ParameterLabels:
     QSS3BucketName:
       default: Quick Start S3 Bucket Name
+    QSS3BucketRegion:
+      default: Quick Start S3 bucket region
     QSS3KeyPrefix:
       default: Quick Start S3 Key Prefix
     Username:
@@ -39,6 +42,10 @@ Parameters:
     Description: S3 bucket name for the Quick Start assets. Quick Start bucket name can
       include numbers, lowercase letters, uppercase letters, and hyphens (-). It
       cannot start or end with a hyphen (-)
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
     Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
@@ -72,6 +79,8 @@ Parameters:
       instance.
     Type: String
     Default: password
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   UsernameParameter:
     Type: AWS::SSM::Parameter
@@ -193,8 +202,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource:
-                  - Fn::Sub: arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*
+                Resource: !Sub
+                  - arn:${AWS::Partition}:s3:::${S3Bucket}/${QSS3KeyPrefix}*
+                  - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               - Effect: Allow
                 Action:
                   - s3:PutObject
@@ -342,7 +352,6 @@ Resources:
       Timeout: 300
     DependsOn:
       - CopyZips
-      - IamRoleLambdaExecution
   IncidentLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -374,7 +383,6 @@ Resources:
       Timeout: 300
     DependsOn:
       - CopyZips
-      - IamRoleLambdaExecution
   EstimateLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -394,7 +402,6 @@ Resources:
       Timeout: 300
     DependsOn:
       - CopyZips
-      - IamRoleLambdaExecution
 Outputs:
   usernameParameterName:
     Description: SSM username parameter name.

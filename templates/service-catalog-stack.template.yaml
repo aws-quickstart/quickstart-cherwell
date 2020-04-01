@@ -12,12 +12,15 @@ Metadata:
           - GatewayRole
       - Label:
           default: AWS Quick Start Configuration
-        Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
+        Parameters:      
+        - QSS3BucketName
+        - QSS3BucketRegion
+        - QSS3KeyPrefix
   ParameterLabels:
     QSS3BucketName:
       default: Quick Start S3 Bucket Name
+    QSS3BucketRegion:
+      default: Quick Start S3 bucket region
     QSS3KeyPrefix:
       default: Quick Start S3 Key Prefix
     GatewayRole:
@@ -31,6 +34,10 @@ Parameters:
       include numbers, lowercase letters, uppercase letters, and hyphens (-). It
       cannot start or end with a hyphen (-)
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase
@@ -43,6 +50,8 @@ Parameters:
   GatewayRole:
     Description: Iam role to allow API gateway to launch Service Catalog products.
     Type: String
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   IamRoleExecution:
     Type: AWS::IAM::Role
@@ -87,7 +96,6 @@ Resources:
         this catalog.
       DisplayName: Cherwell
   RoleAssociation:
-    DependsOn: ServiceCatalog
     Type: AWS::ServiceCatalog::PortfolioPrincipalAssociation
     Properties:
       PrincipalARN:
@@ -112,7 +120,10 @@ Resources:
             create a stack from this template.
           Info:
             LoadTemplateFromURL:
-              Fn::Sub: https://s3.amazonaws.com/${QSS3BucketName}/${QSS3KeyPrefix}serviceCatalogTemplates/rds.json
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}serviceCatalogTemplates/rds.json'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           Name: v1.0
   S3Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -132,7 +143,10 @@ Resources:
             this template."
           Info:
             LoadTemplateFromURL:
-              Fn::Sub: https://s3.amazonaws.com/${QSS3BucketName}/${QSS3KeyPrefix}serviceCatalogTemplates/s3.yml
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}serviceCatalogTemplates/s3.yml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           Name: v1.0
   EC2Product:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -155,7 +169,10 @@ Resources:
             AWS resources used if you create a stack from this template.
           Info:
             LoadTemplateFromURL:
-              Fn::Sub: https://s3.amazonaws.com/${QSS3BucketName}/${QSS3KeyPrefix}serviceCatalogTemplates/ec2.yml
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}serviceCatalogTemplates/ec2.yml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           Name: v1.0
   AddRDSToCatalog:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
