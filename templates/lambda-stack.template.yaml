@@ -174,8 +174,7 @@ Resources:
           - Arn
       DestBucket:
         Ref: LambdaZipsBucket
-      SourceBucket:
-        Ref: QSS3BucketName
+      SourceBucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Prefix:
         Ref: QSS3KeyPrefix
       Objects:
