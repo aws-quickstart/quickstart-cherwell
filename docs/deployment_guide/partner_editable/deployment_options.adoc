@@ -1,0 +1,5 @@
+// Edit this placeholder text as necessary to describe the deployment options.
+
+This Partner Solution provides the following deployment option:
+
+* https://fwd.aws/bQ54V[Deploy Cherwell Service Management connector into your AWS account]

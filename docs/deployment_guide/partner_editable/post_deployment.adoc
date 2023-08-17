@@ -1,0 +1,46 @@
+// Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
+
+== Postdeployment steps
+
+=== Locate the API key for Cherwell API calls 
+
+After you have successfully deployed the Quick Start, you can configure the AWS Cloud Management mApp. The mApp requires an API Gateway endpoint URL and an API key. Figure 2 shows the *Outputs* tab in the AWS CloudFormation console, which displays the API Gateway endpoint URL for configuring the mApp.
+
+[#postdeploy1]
+.Outputs tab after deployment
+image::../docs/deployment_guide/images/image2.png[Postdeploy]
+
+Figure 2: Outputs tab after deployment
+
+The Outputs tab displays these keys:
+
+* *APIKey* is the API key you will use to configure the AWS Cloud Management mApp.
+* *IncidentSNSTopic* is the name of the SNS incident topic. When you associate this topic with a CloudWatch alarm, it will deliver notifications to your Cherwell Incident Management console.
+* *ServiceEndPoint* is the API Gateway endpoint URL you will need for configuring the AWS Cloud Management mApp.
+
+To locate the API key:
+
+. Sign in to the AWS Management Console and open the API Gateway console at https://console.aws.amazon.com/apigateway/.
+. In the API Gateway main navigation pane, choose *API Keys*.
+. Under *API Keys*, select the key that matches the *APIKey* displayed in the *Outputs* tab in the AWS CloudFormation console.
+. Choose *Show*. The API key will be shown in the console, as illustrated in Figure 3.
+
+[#postdeploy2]
+.API Key ID
+image::../docs/deployment_guide/images/image3.png[Postdeploy]
+
+=== Configure the AWS Cloud Management mApp
+
+To get the AWS Cloud Management mApp and merge it into your Cherwell environment, follow the instructions in the https://www.cherwell.com/mapp-exchange/cherwell-software/m/mapps/1899[AWS Cloud Management mApp documentation], which is available in the Cherwell mApp Exchange.
+
+Downloading the mApp requires signing up for community membership, which is free.
+
+=== Security
+
+==== Amazon API Gateway security
+
+The API Gateway API created in the solution is protected by incorporating an API access key. This prevents unauthorized API calls. The API Gateway API can be further secured by restricting the caller’s IP address to your Cherwell Service Management system’s IP address, or by enabling AWS WAF. For more information on securing the API Gateway endpoint in this solution, see the https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html[API Gateway documentation].
+
+==== AWS Service Catalog security
+
+This Quick Start creates an AWS Service Catalog portfolio with sample products that your Cherwell users can request to launch. Permissions to launch products are abstracted by using launch constraints. A launch constraint specifies the IAM role that AWS Service Catalog assumes when a user launches a product. The launch constraints in this solution are provided as an example. We recommend that you review the constraints in the AWS Service Catalog console before you enable this solution in your production environment.
