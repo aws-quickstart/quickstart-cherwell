@@ -1,0 +1,31 @@
+:xrefstyle: short
+
+Deploying this Partner Solution with *default parameters* builds the following Cherwell Service Management connector environment in the AWS Cloud.
+
+// Replace this example diagram with your own. Follow our wiki guidelines: https://w.amazon.com/bin/view/AWS_Quick_Starts/Process_for_PSAs/#HPrepareyourarchitecturediagram. Upload your source PowerPoint file to the GitHub {deployment name}/docs/images/ directory in its repository.
+
+[#architecture1]
+.Partner Solution architecture for {partner-product-short-name} on AWS
+image::../docs/deployment_guide/images/image1.png[Architecture]
+
+As shown in <<architecture1>>, this Partner Solution sets up the following:
+
+* A highly available, serverless architecture.
+* An SNS topic that delivers CloudWatch alarm events to the Cherwell Incident Management console.
+* AWS Config and AWS Config rules in your AWS Region to monitor:
+
+* Storage encryption for Amazon Elastic Block Store (Amazon EBS), Amazon S3, and Amazon Relational Database Service (Amazon RDS)
+* AWS Identity and Access Management (IAM) password policy
+* Root account multi-factor authentication (MFA)
+* Amazon S3 public read and write
+* Insecure security group rules
+* Three Lambda functions:
+** An incident Lambda function that processes the CloudWatch notification and forwards it to the Cherwell Incident Management console.
+** A CMDB Lambda function that publishes AWS Config information to the Cherwell Service Management system. This function creates or updates AWS resources within the Cherwell CMDB and pushes non-compliant AWS Config rules to the Cherwell Incident Management console.
+** A cost estimate Lambda function that analyzes an AWS CloudFormation template and returns a URL estimating the monthly cost of deploying the infrastructure to the AWS Simple Monthly Calculator.
+* An AWS Service Catalog portfolio with sample products that your Cherwell users can request to provision from the Cherwell Service Catalog.
+* Amazon API Gateway with REST endpoints that are consumed by the Cherwell Service Management system.
+
+*Notes* AWS Config uses a _configuration recorder_ to continually record changes to your AWS resources, delivering notifications and updated states through a _delivery channel_.
+
+AWS Config currently allows only one configuration recorder and one delivery channel per region per AWS account. If prior to launching this Quick Start you have already enabled AWS Config in the same region, you must set the parameter *Deploy AWS Config Support* to *False*.

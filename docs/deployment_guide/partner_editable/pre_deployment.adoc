@@ -1,0 +1,17 @@
+//Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
+
+== Predeployment steps
+
+=== Cherwell mApp software
+
+To take advantage of the architecture created by this Partner Solution, you must have https://www.cherwell.com/products/it-service-management/[Cherwell Service Management] platform version 9.5 and install the https://www.cherwell.com/mapp-exchange/cherwell-software/m/mapps/1899[AWS Cloud Management mApp] from the Cherwell mApp Exchange. For instructions, see link:#step-4.-configure-the-aws-cloud-management-mapp[step 4] of the deployment steps.
+
+The https://www.cherwell.com/mapp-exchange/[Cherwell mApp Exchange] is a community-driven online marketplace where Cherwell customers and partners share and obtain pre-built applications or methods of integration that can be added to their Cherwell Service Management implementations.
+
+Mergeable applications (mApp) use a patented packaging technique for content that is merged into the Cherwell platform. This unique approach enables easy reuse and sharing of integrations, extensions, and orchestration packs that complement and enhance the Cherwell Service Management solution.
+
+The AWS Cloud Management mApp contains definitions and data that will be merged into your existing Cherwell Service Management installation to create a communication channel between your Cherwell Service Management system and AWS account.
+
+=== Cherwell REST APIs
+
+The Lambda functions in this architecture use the Cherwell REST APIs. Cherwell REST APIs provide programmatic access to many Cherwell Service Management functions through HTTP-based RESTful APIs. For information about completing the link:#parameters-for-deploying-the-cherwell-management-system-connector[_Cherwell Configuration_ parameters] in step 2 of the deployment steps, see the https://www.cherwell.com/mapp-exchange/cherwell-software/m/mapps/1899[AWS Cloud Management mApp documentation] on the Cherwell website.
