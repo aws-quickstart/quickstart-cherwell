@@ -92,7 +92,7 @@ Parameters:
       The password for the user on the Cherwell instance who is authorized to
       make REST requests.
     Type: String
-    Default: CSDAdmin
+    NoEcho: true
   Url:
     AllowedPattern: ^https?:\/\/(?!.*:\/\/)\S+
     ConstraintDescription: The URL of the Cherwell instance. The URL must start with HTTPS.
