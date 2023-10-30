@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Create the event resouces.
+Description: Create the event resouces (qs-1ui8pi7ot).
 Parameters:
   IncidentFunction:
     Description: The arn for the Lambda function that will send incidents to Cherwell.
