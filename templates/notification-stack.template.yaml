@@ -67,10 +67,45 @@ Resources:
         Fn::GetAtt:
           - CMDBEventRule
           - Arn
+  IncidentSNSTopicKMS:
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks: [ EIAMPolicyActionWildcard ]
+          ignore_reasons:
+            EIAMPolicyActionWildcard: >-
+              Action This is required as it is for root key management.
+    Type: AWS::KMS::Key
+    Properties:
+      Description: "KMS Key used to encrypt SNS"
+      EnableKeyRotation: true
+      PendingWindowInDays: 20
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-default-1
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
+          - Sid: Enable usage for SNS
+            Effect: Allow
+            Principal:
+              AWS: sns.amazonaws.com
+            Action:
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Resource: '*'
+            Condition:
+              ArnLike:
+                aws:SourceArn: 'arn:aws:sns::::'
   IncidentSNSTopic:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: Cherwell
+      KmsMasterKeyId: !Ref IncidentSNSTopicKMS
       Subscription:
         - Endpoint:
             Ref: IncidentFunction
